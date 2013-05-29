@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+        <link type="text/css" href="css/map.css" rel="stylesheet" />
+        <link type="text/css" href="css/map1.css" rel="stylesheet" />
+        <link type="text/css" href="css/jquery.mCustomScrollbar.css" rel="stylesheet" />
+
+        <script type="text/javascript" src="scripts/jquery-1.7.js"></script>
+        <script type="text/javascript" src="scripts/jquery.mousewheel.min.js" ></script>
+        <script type="text/javascript" src="scripts/jquery.mCustomScrollbar.js"></script>
+        <script type="text/javascript" src="scripts/jquery-ui-1.8.21.custom.min.js"></script>
+        <script type="text/javascript" src="scripts/flyjsonp.min.js"></script>
+
+
+        <script type="text/javascript" src="js/jsall.js"></script> 
+        <!--	<script type="text/javascript" src="scripts/mapwork.min.js"></script>-->
+
+        <script type="text/javascript">
+        	
+            var mapPage = null;
+            mapwork.ajaxtype = 1;  //use jsonp
+            mapwork.resizeListener = function() {
+                $("#indexbox").height($("#w").height());
+            }
+            $(document).ready(function() {
+            
+                $("#indexbox").height($("#w").height() - $(".mb_line").height());
+            
+               	mapPage = new mapwork.MapPage("cc");
+                //道路阻断
+                $(".icon_01.type_01").children("a").click(function(){//block
+                    mapPage._map.openModule(mapwork.Block.ID);
+                });
+                
+                //天气
+                $(".icon_07.type_01").children("a").click(function(){//weather
+                    mapPage._map.openModule(mapwork.Weather.ID);
+                });
+                $(".tianqi").click(function(){//weather
+                    mapPage._map.openModule(mapwork.Weather.ID);
+                });
+                
+                //交通实况直播
+                $(".icon_03.type_01").children("a").click(function(){
+                    mapPage._map.openModule(mapwork.JTSK.ID);	
+                });
+                
+                //诱导牌
+                $(".icon_02.type_02").children("a").click(function(){
+                    mapPage._map.openModule(mapwork.YDP.ID);				
+                });
+                
+                //可变信息板
+                $(".icon_14.type_02").children("a").click(function(){
+                    mapPage._map.openModule(mapwork.TextBoard.ID);				
+                });
+                
+                //交通直播
+                $(".icon_12.type_02").children("a").click(function(){
+                    mapPage._map.openModule(mapwork.JTZB.ID);				
+                });
+                
+                //旅游景点
+                $(".icon_08.type_02").children("a").click(function(){
+                    mapPage._map.openModule(mapwork.Travel.ID);				
+                });
+                
+                //阻断查询
+                $(".icon_01.type_02").children("a").click(function(){
+                    var module = mapPage._map.getModule(mapwork.Block.ID);
+                    module.init();
+                    mapPage._map._currentModule = module;		
+                    var block = module._setting.newModuleItem(module,1);
+                    block.showQueryBlock();
+                });
+                
+                $(".sr_list.srl_04").click(function(event){//full screen
+                    var display = $("#n").css("display");
+                    if(display != "none") {
+                        $("#n").css("display","none");
+                        $("#w").css("display","none");
+                        $(".sr_list.srl_04").children("span").html("<b></b>退出全屏");
+                        $(".sr_list.srl_04").css("width",80);
+                        $(".sd_link").css("width",450);
+                        mapPage.resetSize();
+                    } else {
+                        $("#n").css("display","block");
+                        $("#w").css("display","block");
+                        $(".sr_list.srl_04").children("span").html("<b></b>全屏");
+                        $(".sr_list.srl_04").css("width",60);
+                        $(".sd_link").css("width",430);
+                        mapPage.resetSize();
+                    }
+                });
+                $(".dropDownList.drop_01").click(function(event){
+                    mapPage.moveToDefaultPos();
+                });
+
+                $(".sr_list.srl_00").click(function(event){
+                    mapPage.toggleMapTraffic();
+                });
+
+                $(".sr_list.srl_01").click(function(event){
+                    mapPage.changeMapStyle();
+                });
+				
+                $(".sr_list.srl_02").click(function(event){
+                    mapPage.doMeasure();
+                });
+                
+                $(".sr_list.srl_05").click(function(event){
+                    window.print(); 
+                    return false;
+                    //                    mapPage.doVectorTest();
+                });
+				
+                $("#cbxTitle").click(function(event) {
+                    $("#cbxSearch").click();
+                });
+				
+                var c = document.getElementById("c");
+                var s = document.getElementById("s");
+				
+                var newHeight = mapwork.utils.getWindowHeight() - c.offsetTop - s.offsetHeight;
+                $("#indexbox").height(newHeight);
+                $("#indexbox").mCustomScrollbar({
+                    scrollButtons:{
+                        enable:true
+                    }
+                });
+				
+            });
+			
+            function changSearchTab(tabItem,searchType){//searchType: a: all   b: bounds   r:range
+                var searchModule = mapPage._map.getModule(mapwork.Search.ID);
+                if(searchModule) {
+                    searchModule.setSearchType(searchType);
+                }
+                $(tabItem).addClass("on");
+                $(tabItem).siblings().removeClass("on");
+                $(tabItem).siblings().addClass("off");
+            }			
+            function mapSearch(searchName) {
+                if(searchName && searchName.trim().length != 0){
+                    $("#searchName").val(searchName);
+                }
+                var name = $("#searchName").val();
+                var isBoundSearch = $("#cbxSearch").get(0).checked;
+				
+                if(name != ""){
+                    mapPage.doSearch(name,isBoundSearch);
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <div id="container" style="position: relative;">
+            <div id="n" style="width: 100%;height: 111px;">
+                <div class="map_link">
+                    <span><a href="#" title="">上海市路政局首页</a></span>
+                    <span><a href="#" title="">意见反馈</a></span>
+                    <span><a href="#" title="">免责声明</a></span>
+                </div>                
+                <div class="mh_main">
+                    <div class="map_logo"><a href="#" title=""><img src="images/map/logo_map1.gif"></a></div>
+                    <div class="map_search">
+                        <!--                            <ul class="mps_mnu">
+                                                    <li id="mm1" class="on" onclick="changSearchTab(this,'a')">全部搜索</li>
+                                                    <li id="mm2" class="off" onclick="changSearchTab(this,'b')">窗口搜索</li>
+                                                    <li id="mm3" class="off" onclick="changSearchTab(this,'r')">周边搜索</li>
+                                                </ul>-->
+                        <div class="mps_box">
+                            <form id="form1" name="fmwd" onsubmit="mapSearch();return false" style="display: block; ">
+                                <div class="dis" id="mms1">
+                                    <div class="mps_put">
+                                        <div class="mps_text_01">
+                                            <div class="mp_text_01"><input type="text" id="searchName" maxlength="90" autocomplete="off"></div>
+                                            <!--<div class="mps_down"><img src="images/map/icon_down.gif"></div>-->
+                                        </div>
+                                    </div>
+                                    <div class="cbx_btn"><input id="cbxSearch" type="checkbox" id="cbxSearch" ><span id="cbxTitle">视野范围搜索</span></div>
+                                    <div class="mps_btn"><input type="image" id="search" src="images/map/btn_search.gif"></div>
+                                </div>
+                            </form>
+                            <div class="undis" style="display: none;" id="mms2">
+                                <div class="mps_put">
+                                    <div class="mps_text_02">
+                                        <div class="mp_text_02"><input type="text" maxlength="33"></div>
+                                        <div class="mps_down"><img src="images/map/icon_down.gif"></div>
+                                    </div>
+                                    <div class="mp_change"><img src="images/map/icon_change.jpg"></div>
+                                    <div class="mps_text_02">
+                                        <div class="mp_text_02"><input type="text" maxlength="33"></div>
+                                        <div class="mps_down"><img src="images/map/icon_down.gif"></div>
+                                    </div>
+                                </div>
+                                <div class="mps_btn"><input type="image" src="images/map/btn_search.gif"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="w" style="left:0;width: 300px;height:400px;position: absolute;">
+                <div class="mb_line"><img src="images/map/bg_side_left.gif"></div>                
+                <div class="indexbox" id="indexbox" name="indexDiv" style="height:400px;overflow: auto;border-right: 1px solid #E3E5F4;">
+                    <!--<div class="ib_weather"><iframe src="http://m.weather.com.cn/m/pn4/weather.htm?id=101020100T " width="160" height="20" marginwidth="0" marginheight="0" hspace="0" vspace="0" frameborder="0" scrolling="no"></iframe></div>-->
+                    <div class="recommend">
+                        <div class="rm_top">热门推荐</div>
+                        <div id="pic_recommend" class="rm_bott">
+                            <div class="buttons prev"><img src="images/map/icon_left.gif"></div>
+                            <div class="viewport">
+                                <ul class="overview">
+                                    <li class="tianqi"><a href="#" title=""><img src="images/map/pic_recomm_01.gif"><p>天气</p></a></li>
+                                    <li><a href="#" title=""><img src="images/map/pic_recomm_02.gif"><p>地铁</p></a></li>
+
+                                </ul>
+                            </div>
+                            <div class="buttons next"><img src="images/map/icon_right.gif"></div>
+                        </div>
+                    </div>
+                    <div class="recomm_icon">
+                        <ul class="ul_reicon">
+                            <li class="icon_01 type_01"><a href="#" title=""><b></b>道路事件</a></li>
+                            <li class="icon_01 type_02"><a href="#" title=""><b></b>阻断查询</a></li>
+                            <li class="icon_03 type_01"><a href="#" title=""><b></b>交通实况</a></li>
+                            <li class="icon_02 type_02"><a href="#" title=""><b></b>交通诱导牌</a></li>
+                            <li class="icon_05 type_01"><a href="javascript:void(0);" onclick="mapSearch('服务区');" title=""><b></b>服务区</a></li>
+                            <li class="icon_04 type_02"><a href="javascript:void(0);" onclick="mapSearch('加油站');" title="搜索加油站"><b></b>加油站</a></li>
+                            <li class="icon_07 type_01"><a href="#" title=""><b></b>天气</a></li>
+                            <li class="icon_08 type_02"><a href="#" title=""><b></b>旅游景点</a></li>
+                            <li class="icon_09 type_01"><a href="javascript:void(0);" onclick="mapSearch('立交桥');" title=""><b></b>立交桥</a></li>
+                            <li class="icon_10 type_02"><a href="#" title=""><b></b>高架封路</a></li>
+                            <li class="icon_11 type_01"><a href="#" title=""><b></b>夜间施工</a></li>
+                            <li class="icon_12 type_02"><a href="#" title=""><b></b>交通直播</a></li>
+                            <li class="icon_13 type_01"><a href="javascript:void(0);" onclick="mapSearch('交叉路口');" title=""><b></b>交叉路口</a></li>
+                            <li class="icon_14 type_02"><a href="#" title=""><b></b>可变信息板</a></li>
+                            <li class="icon_15 type_01"><a href="javascript:void(0);" onclick="mapSearch('汽车站');" title=""><b></b>汽车站</a></li>
+                            <li class="icon_16 type_02"><a href="#" title=""><b></b>火车站</a></li>
+                            <li class="icon_17 type_01"><a href="javascript:void(0);" onclick="mapSearch('轮渡');" title=""><b></b>轮渡</a></li>
+                            <li class="icon_18 type_02"><a href="javascript:void(0);" onclick="mapSearch('飞机场');" title=""><b></b>飞机场</a></li>
+                        </ul>
+                    </div>
+                </div>            
+
+                <div id="sidebar" class="sidebar" style="display:none;border-right: 1px solid #E3E5F4;">
+                </div>
+
+            </div>
+            <div id="w_hsp" class="hsplit" style="width:0px;height:400px;position: absolute;">
+            </div>
+            <div id="e" style="right:0;width: 1px;height:400px;position: absolute;display: block;">
+            </div>
+            <div id="e_hsp" class="hsplit" style="width:0px;height:400px;position: absolute;">
+            </div>
+            <div id="c" style="height:400px;margin-left:287px;margin-right: 0px;">
+
+                <div id="cn">
+                    <div class="side_left">
+                        <div class="dropDownList drop_01">
+                            <span>上海市</span>
+                        </div>
+                    </div>
+                    <div class="side_right">
+                        <div class="sd_link">
+                            <div class="sr_list srl_00">
+                                <span><b></b>实时路况</span>
+                            </div>
+                            <div class="sr_list srl_01">
+                                <span><b></b>切换样式</span>
+                            </div>
+                            <div class="sr_list srl_02">
+                                <span><b></b>测距</span>
+                            </div>
+                            <!--
+                                                                <div class="sr_list srl_03">
+                                                                    <span><b></b>测面积</span>
+                                                                </div>
+                            -->
+                            <div class="sr_list srl_04">
+                                <span><b></b>全屏</span>
+                            </div>
+                            <div class="sr_list srl_05">
+                                <span><b></b>打印</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="cc"  style="height:500px;margin-right: 0px;">
+                </div>
+            </div>
+            <div id="s" style="width: 100%;height: 0px;">
+            </div>
+
+            <div id="dd" style="position:absolute;display: none;background: #000; z-index: 10000;">
+            </div>
+        </div>
+    </body>
+</html>
